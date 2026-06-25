@@ -13,11 +13,10 @@ macro_block_close view
 
 # renders view inside a component - use inside macro_block component
 macro_block_open component_view
-	rust
-		view! {
+	view! {
 
 macro_block_close component_view
-		}
+	}
 
 # defines a leptos component with the given name
 macro_block_open component $name

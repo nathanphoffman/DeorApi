@@ -20,10 +20,16 @@ fn HttpResponse handle_home(HttpRequest req)
 		</div>
 
 fn void main()
+
+	const string HELLO = "/hello"
+	const string ECHO = "/echo"
+	const string STATUS = "/status"
+	const string ROOT = "/"
+
 	let server = http_make()
-	let server = http_get(server, "/hello", handle_hello)
-	let server = http_post(server, "/echo", handle_echo)
-	let server = http_get(server, "/status", handle_status)
-	let server = http_get(server, "/", handle_home)
+	let server = http_get(server, HELLO, handle_hello)
+	let server = http_post(server, ECHO, handle_echo)
+	let server = http_get(server, STATUS, handle_status)
+	let server = http_get(server, ROOT, handle_home)
 	let port = 3000
 	http_serve(server, port)

@@ -6,9 +6,4 @@ macro_block component Counter
 		<div>
 			<h1>Counter</h1>
 			<p>Count: 0</p>
-			<button on:click=on_click>Increment</button>
 		</div>
-
-fn void on_click(MouseEvent ev)
-	let count = use_context(CountSignal)
-	signal_set(count, signal_get(count) + 1)
