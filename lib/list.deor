@@ -1,0 +1,73 @@
+shape lTList = list of T
+
+fn T l_T_first(lTList list)
+	rust
+		list[0].clone()
+
+fn T l_T_last(lTList list)
+	rust
+		list[list.len() - 1].clone()
+
+fn bool l_T_is_empty(lTList list)
+	rust
+		list.is_empty()
+
+fn lTList l_T_reverse(lTList list)
+	rust
+		list.into_iter().rev().collect()
+
+fn lTList l_T_slice(lTList list, int start, int end)
+	rust
+		list[start as usize..end as usize].to_vec()
+
+fn lTList l_T_concat(lTList a, lTList b)
+	rust
+		{ let mut r = a; r.extend(b); r }
+
+fn lTList l_T_sort(lTList list)
+	rust
+		{ let mut s = list; s.sort(); s }
+
+fn T l_T_sum(lTList list)
+	rust
+		list.iter().copied().sum()
+
+fn T l_T_min(lTList list)
+	rust
+		list.iter().cloned().min().unwrap_or_default()
+
+fn T l_T_max(lTList list)
+	rust
+		list.iter().cloned().max().unwrap_or_default()
+
+fn string l_T_join(lTList list, string sep)
+	rust
+		list.join(sep.as_str())
+
+fn bool l_T_contains(lTList list, T item)
+	rust
+		list.contains(&item)
+
+fn int l_T_index_of(lTList list, T item)
+	rust
+		list.iter().position(|x| x == &item).map(|i| i as i32).unwrap_or(-1)
+
+fn lTList l_T_unique(lTList list)
+	rust
+		{ let mut seen = std::collections::HashSet::new(); list.into_iter().filter(|x| seen.insert(x.clone())).collect() }
+
+fn lTList l_T_take(lTList list, int n)
+	rust
+		list.into_iter().take(n as usize).collect()
+
+fn lTList l_T_drop(lTList list, int n)
+	rust
+		list.into_iter().skip(n as usize).collect()
+
+fn lTList l_T_push(lTList list, T item)
+	rust
+		{ let mut r = list; r.push(item); r }
+
+fn lTList l_T_pop(lTList list)
+	rust
+		{ let mut r = list; r.pop(); r }

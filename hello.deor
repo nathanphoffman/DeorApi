@@ -1,0 +1,29 @@
+
+import "lib/http.deor"
+import "lib/leptos.deor"
+import "components/counter.deor"
+
+fn HttpResponse handle_hello(HttpRequest req)
+	return http_ok("Hello, world!")
+
+fn HttpResponse handle_echo(HttpRequest req)
+	return http_ok(req_body(req))
+
+fn HttpResponse handle_status(HttpRequest req)
+	return http_json("{\"status\": \"ok\", \"message\": \"Deor API is running\"}")
+
+fn HttpResponse handle_home(HttpRequest req)
+	macro_block view
+		<div>
+			<h1>Home</h1>
+			<Counter />
+		</div>
+
+fn void main()
+	let server = http_make()
+	let server = http_get(server, "/hello", handle_hello)
+	let server = http_post(server, "/echo", handle_echo)
+	let server = http_get(server, "/status", handle_status)
+	let server = http_get(server, "/", handle_home)
+	let port = 3000
+	http_serve(server, port)

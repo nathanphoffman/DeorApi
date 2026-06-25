@@ -1,0 +1,135 @@
+raw HttpServer
+raw HttpRequest
+raw HttpResponse
+
+rust
+	use std::io::Read;
+	use std::sync::{Arc, Mutex};
+	use leptos::prelude::*;
+
+	type RouteHandler = Arc<dyn Fn(HttpRequest) -> HttpResponse + Send + Sync>;
+
+	#[derive(Clone)]
+	struct HttpRequest {
+		pub method: String,
+		pub path: String,
+		pub body: String,
+		pub query: String,
+	}
+
+	#[derive(Clone)]
+	struct HttpResponse {
+		pub status: u16,
+		pub body: String,
+		pub content_type: String,
+	}
+
+	#[derive(Clone)]
+	struct HttpServer {
+		routes: Arc<Mutex<Vec<(String, String, RouteHandler)>>>,
+	}
+
+shape httpHandler = func of HttpRequest to HttpResponse
+
+fn HttpServer http_make()
+	rust
+		HttpServer { routes: Arc::new(Mutex::new(Vec::new())) }
+
+fn HttpServer http_get(HttpServer server, string path, httpHandler handler)
+	rust
+		let h: RouteHandler = Arc::new(handler);
+		server.routes.lock().unwrap().push(("GET".to_string(), path, h));
+		server
+
+fn HttpServer http_post(HttpServer server, string path, httpHandler handler)
+	rust
+		let h: RouteHandler = Arc::new(handler);
+		server.routes.lock().unwrap().push(("POST".to_string(), path, h));
+		server
+
+fn HttpServer http_put(HttpServer server, string path, httpHandler handler)
+	rust
+		let h: RouteHandler = Arc::new(handler);
+		server.routes.lock().unwrap().push(("PUT".to_string(), path, h));
+		server
+
+fn HttpServer http_delete(HttpServer server, string path, httpHandler handler)
+	rust
+		let h: RouteHandler = Arc::new(handler);
+		server.routes.lock().unwrap().push(("DELETE".to_string(), path, h));
+		server
+
+fn void http_serve(HttpServer server, int port)
+	rust
+		let addr = format!("0.0.0.0:{}", port);
+		let listener = tiny_http::Server::http(&addr).expect("Failed to start server");
+		println!("Deor API running on http://localhost:{}", port);
+		for mut request in listener.incoming_requests() {
+			let method = request.method().to_string();
+			let url = request.url().to_string();
+			let (path, query) = match url.find('?') {
+				Some(idx) => (url[..idx].to_string(), url[idx+1..].to_string()),
+				None => (url.clone(), String::new()),
+			};
+			let mut body = String::new();
+			let _ = request.as_reader().read_to_string(&mut body);
+			let req = HttpRequest { method: method.clone(), path: path.clone(), body, query };
+			let handler = {
+				let routes = server.routes.lock().unwrap();
+				routes.iter()
+					.find(|(m, p, _)| m == &method && p == &path)
+					.map(|(_, _, h)| Arc::clone(h))
+			};
+			let resp = match handler {
+				Some(h) => h(req),
+				None => HttpResponse { status: 404, body: "Not Found".to_string(), content_type: "text/plain".to_string() },
+			};
+			let content_type = tiny_http::Header::from_bytes(
+				b"Content-Type",
+				resp.content_type.as_bytes(),
+			).unwrap();
+			let response = tiny_http::Response::from_string(resp.body)
+				.with_status_code(tiny_http::StatusCode(resp.status))
+				.with_header(content_type);
+			let _ = request.respond(response);
+		}
+
+fn HttpResponse http_ok(string body)
+	rust
+		HttpResponse { status: 200, body, content_type: "text/plain; charset=utf-8".to_string() }
+
+fn HttpResponse http_json(string body)
+	rust
+		HttpResponse { status: 200, body, content_type: "application/json".to_string() }
+
+fn HttpResponse http_created(string body)
+	rust
+		HttpResponse { status: 201, body, content_type: "text/plain; charset=utf-8".to_string() }
+
+fn HttpResponse http_not_found(string message)
+	rust
+		HttpResponse { status: 404, body: message, content_type: "text/plain; charset=utf-8".to_string() }
+
+fn HttpResponse http_error(int status, string message)
+	rust
+		HttpResponse { status: status as u16, body: message, content_type: "text/plain; charset=utf-8".to_string() }
+
+fn HttpResponse http_html(string body)
+	rust
+		HttpResponse { status: 200, body, content_type: "text/html; charset=utf-8".to_string() }
+
+fn string req_method(HttpRequest req)
+	rust
+		req.method
+
+fn string req_path(HttpRequest req)
+	rust
+		req.path
+
+fn string req_body(HttpRequest req)
+	rust
+		req.body
+
+fn string req_query(HttpRequest req)
+	rust
+		req.query

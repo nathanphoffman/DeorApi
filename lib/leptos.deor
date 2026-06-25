@@ -1,0 +1,30 @@
+
+rust
+	use leptos::prelude::*;
+
+# renders view to html string and returns HttpResponse - use inside handlers
+macro_block_open view
+	rust
+		let html = view! {
+
+macro_block_close view
+		}.to_html();
+		http_html(html)
+
+# renders view inside a component - use inside macro_block component
+macro_block_open component_view
+	rust
+		view! {
+
+macro_block_close component_view
+		}
+
+# defines a leptos component with the given name
+macro_block_open component $name
+	rust
+		#[component]
+		pub fn $name() -> impl IntoView {
+
+macro_block_close component
+	rust
+		}
