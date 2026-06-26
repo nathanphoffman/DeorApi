@@ -10,30 +10,14 @@ fn HttpResponse handle_echo(HttpRequest req)
 fn HttpResponse handle_status(HttpRequest req)
 	return http_json("{\"status\": \"ok\", \"message\": \"Deor API is running\"}")
 
-fn HttpResponse handle_app(HttpRequest req)
-	rust
-		http_html("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><script type=\"module\">import init from '/pkg/deor_client.js'; init();</script></head><body></body></html>".to_string())
-
-fn HttpResponse handle_pkg_js(HttpRequest req)
-	return http_file("target/site/pkg/deor_client.js")
-
-fn HttpResponse handle_pkg_wasm(HttpRequest req)
-	return http_file("target/site/pkg/deor_client_bg.wasm")
-
 fn void main()
 	const string HELLO = "/hello"
 	const string ECHO = "/echo"
 	const string STATUS = "/status"
-	const string ROOT = "/"
-	const string PKG_JS = "/pkg/deor_client.js"
-	const string PKG_WASM = "/pkg/deor_client_bg.wasm"
 
 	let server = http_make()
 	let server = http_get(server, HELLO, handle_hello)
 	let server = http_post(server, ECHO, handle_echo)
 	let server = http_get(server, STATUS, handle_status)
-	let server = http_get(server, ROOT, handle_app)
-	let server = http_get(server, PKG_JS, handle_pkg_js)
-	let server = http_get(server, PKG_WASM, handle_pkg_wasm)
 	let port = 3000
 	http_serve(server, port)

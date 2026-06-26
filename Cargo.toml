@@ -7,15 +7,5 @@ edition = "2021"
 name = "DeorApi"
 path = "build/main.rs"
 
-[lib]
-name = "deor_client"
-crate-type = ["cdylib"]
-path = "build/client.rs"
-
 [dependencies]
 tiny_http = "0.12"
-leptos = { version = "0.7", features = ["csr"], optional = true }
-wasm-bindgen = { version = "0.2", optional = true }
-
-[features]
-client = ["dep:leptos", "dep:wasm-bindgen"]
