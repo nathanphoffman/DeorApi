@@ -1,9 +1,0 @@
-
-import "lib/leptos.deor"
-
-macro_block component Counter
-	macro_block component_view
-		<div>
-			<h1>Counter</h1>
-			<p>Count: 0</p>
-		</div>
